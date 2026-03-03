@@ -24,3 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
+
+# Google Sheets sync script (secrets managed via Apps Script Properties)
+google-sheets-sync.js

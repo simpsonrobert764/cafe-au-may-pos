@@ -1,16 +1,29 @@
-# React + Vite
+# Cafe Au May POS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight point-of-sale system for Cafe Au May, built with React and Supabase.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Ring up orders with a tap-friendly menu interface
+- Track sales by day with customer names and payment methods (Cash / Venmo)
+- Menu management with categories (Drinks, Sweet, Savory, Add-Ons), pricing, and cost tracking
+- Daily sales summaries with profit margins
+- Offline-capable with localStorage, syncs to Supabase when online
+- Google Sheets auto-sync for reporting (via Apps Script, runs separately)
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React + Vite
+- **Database**: Supabase (Postgres)
+- **Hosting**: GitHub Pages
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Clone the repo
+2. `npm install`
+3. Create a `.env` file with your Supabase credentials:
+   ```
+   VITE_SUPABASE_URL=<your-supabase-url>
+   VITE_SUPABASE_ANON_KEY=<your-anon-key>
+   ```
+4. `npm run dev`
