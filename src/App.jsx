@@ -111,16 +111,25 @@ export default function App() {
   const today = dayId()
   const isDayClosed = closedDays.includes(today)
 
-  // ── Supabase hydration ──
+  // ── Supabase hydration: always pull remote and merge ──
   useEffect(() => {
     (async () => {
-      const hasLocal = localStorage.getItem('cam_sales') || localStorage.getItem('cam_menu')
-      if (!hasLocal) {
-        const remote = await pullAll()
-        if (remote) {
-          if (remote.menu.length) setMenu(remote.menu)
-          if (remote.sales.length) setSales(remote.sales)
-          if (remote.closedDays.length) setClosedDays(remote.closedDays)
+      const remote = await pullAll()
+      if (remote) {
+        // Menu: prefer remote if it exists, otherwise keep local
+        if (remote.menu.length) setMenu(remote.menu)
+        // Sales: merge local + remote by id, remote wins on conflict
+        if (remote.sales.length) {
+          setSales(prev => {
+            const map = new Map()
+            prev.forEach(s => map.set(s.id, s))
+            remote.sales.forEach(s => map.set(s.id, s))
+            return [...map.values()].sort((a, b) => new Date(b.time) - new Date(a.time))
+          })
+        }
+        // Closed days: union of local + remote
+        if (remote.closedDays.length) {
+          setClosedDays(prev => [...new Set([...prev, ...remote.closedDays])])
         }
       }
       setHydrated(true)
