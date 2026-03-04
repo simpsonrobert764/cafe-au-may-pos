@@ -12,26 +12,29 @@ import {
 const CATEGORIES = ['Drinks', 'Sweet', 'Savory', 'Add-Ons']
 
 const DEFAULT_MENU = [
-  { id: 'm1',  name: 'Drip Coffee',     price: 3.00, cost: 0.40, category: 'Drinks',  emoji: '☕' },
-  { id: 'm2',  name: 'Iced Coffee',     price: 4.00, cost: 0.50, category: 'Drinks',  emoji: '🧊' },
-  { id: 'm3',  name: 'Latte',           price: 5.00, cost: 0.80, category: 'Drinks',  emoji: '🥛' },
-  { id: 'm4',  name: 'Cappuccino',      price: 5.00, cost: 0.80, category: 'Drinks',  emoji: '☕' },
-  { id: 'm5',  name: 'Matcha Latte',    price: 5.50, cost: 1.00, category: 'Drinks',  emoji: '🍵' },
-  { id: 'm6',  name: 'Hot Chocolate',   price: 4.50, cost: 0.70, category: 'Drinks',  emoji: '🍫' },
-  { id: 'm7',  name: 'Tea',             price: 3.00, cost: 0.30, category: 'Drinks',  emoji: '🫖' },
-  { id: 'm8',  name: 'Espresso',        price: 3.00, cost: 0.40, category: 'Drinks',  emoji: '⚡' },
-  { id: 'm9',  name: 'Croissant',       price: 4.00, cost: 1.20, category: 'Sweet',   emoji: '🥐' },
-  { id: 'm10', name: 'Muffin',          price: 3.50, cost: 0.90, category: 'Sweet',   emoji: '🧁' },
-  { id: 'm11', name: 'Scone',           price: 3.50, cost: 0.80, category: 'Sweet',   emoji: '🍪' },
-  { id: 'm12', name: 'Cookie',          price: 3.00, cost: 0.60, category: 'Sweet',   emoji: '🍪' },
-  { id: 'm13', name: 'Banana Bread',    price: 4.00, cost: 1.00, category: 'Sweet',   emoji: '🍌' },
-  { id: 'm14', name: 'Avocado Toast',   price: 8.00, cost: 2.50, category: 'Savory',  emoji: '🥑' },
-  { id: 'm15', name: 'Egg Sandwich',    price: 7.00, cost: 2.00, category: 'Savory',  emoji: '🥚' },
-  { id: 'm16', name: 'Bagel & Cream',   price: 5.00, cost: 1.20, category: 'Savory',  emoji: '🥯' },
-  { id: 'm17', name: 'Quiche Slice',    price: 6.00, cost: 1.80, category: 'Savory',  emoji: '🥧' },
-  { id: 'm18', name: 'Oat Milk',        price: 1.00, cost: 0.30, category: 'Add-Ons', emoji: '🥛' },
-  { id: 'm19', name: 'Extra Shot',      price: 1.00, cost: 0.20, category: 'Add-Ons', emoji: '💉' },
-  { id: 'm20', name: 'Syrup',           price: 0.75, cost: 0.10, category: 'Add-Ons', emoji: '🍯' },
+  // Drinks
+  { id: 'm1',  name: 'Matcha (M)',           price: 6.00, cost: 1.50, category: 'Drinks', emoji: '🍵' },
+  { id: 'm2',  name: 'Matcha (L)',           price: 8.00, cost: 2.00, category: 'Drinks', emoji: '🍵' },
+  { id: 'm3',  name: 'Rasp Wht Choc Matcha (M)', price: 7.00, cost: 2.00, category: 'Drinks', emoji: '🍓' },
+  { id: 'm4',  name: 'Rasp Wht Choc Matcha (L)', price: 9.00, cost: 2.50, category: 'Drinks', emoji: '🍓' },
+  { id: 'm5',  name: 'Viet Coffee (M)',      price: 6.00, cost: 1.00, category: 'Drinks', emoji: '☕' },
+  { id: 'm6',  name: 'Viet Coffee (L)',      price: 8.00, cost: 1.50, category: 'Drinks', emoji: '☕' },
+  // Sweet
+  { id: 'm7',  name: 'Corn Cookie',          price: 5.00, cost: 1.50, category: 'Sweet', emoji: '🍪' },
+  { id: 'm8',  name: 'Strawberry Matcha Pudding (M)', price: 6.00, cost: 2.00, category: 'Sweet', emoji: '🍓' },
+  { id: 'm9',  name: 'Strawberry Matcha Pudding (L)', price: 8.00, cost: 2.50, category: 'Sweet', emoji: '🍓' },
+  { id: 'm10', name: 'Earl Grey Cheesecake', price: 7.00, cost: 2.50, category: 'Sweet', emoji: '🍰' },
+  { id: 'm11', name: 'Earl Grey Macaron',    price: 5.00, cost: 1.50, category: 'Sweet', emoji: '🫖' },
+  { id: 'm12', name: 'Black Sesame Cake Bars', price: 5.00, cost: 1.50, category: 'Sweet', emoji: '🖤' },
+  { id: 'm13', name: 'Pistachio Kadayif Crispy', price: 5.00, cost: 1.50, category: 'Sweet', emoji: '💚' },
+  // Savory
+  { id: 'm14', name: 'Tomato Basil Focaccia (M)', price: 5.00, cost: 1.50, category: 'Savory', emoji: '🍅' },
+  { id: 'm15', name: 'Tomato Basil Focaccia (L)', price: 10.00, cost: 3.00, category: 'Savory', emoji: '🍅' },
+  { id: 'm16', name: 'Chili Oil Scallion Focaccia (M)', price: 5.00, cost: 1.50, category: 'Savory', emoji: '🌶️' },
+  { id: 'm17', name: 'Chili Oil Scallion Focaccia (L)', price: 10.00, cost: 3.00, category: 'Savory', emoji: '🌶️' },
+  { id: 'm18', name: 'Dill Pickle Popcorn',  price: 0.00, cost: 0.50, category: 'Savory', emoji: '🍿' },
+  // Add-Ons
+  { id: 'm19', name: 'Burrata',              price: 1.00, cost: 0.50, category: 'Add-Ons', emoji: '🧀' },
 ]
 
 const TABS = [
