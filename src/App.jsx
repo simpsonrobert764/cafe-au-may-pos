@@ -1099,7 +1099,7 @@ const S = {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
     padding: 14, borderRadius: 12, border: `1px solid ${C.border}`,
     background: C.card, cursor: 'pointer', transition: 'all 150ms',
-    WebkitTapHighlightColor: 'transparent', aspectRatio: '1 / 1',
+    WebkitTapHighlightColor: 'transparent',
     fontFamily: 'inherit', color: 'inherit', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   menuCardFlash: {
