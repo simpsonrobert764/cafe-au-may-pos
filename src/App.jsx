@@ -1058,7 +1058,7 @@ const S = {
     display: 'flex', flex: 1, overflow: 'hidden', position: 'relative',
   },
   menuSide: {
-    flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 16px 0', maxWidth: 720,
+    flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 16px 0',
   },
   registerHeader: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
@@ -1092,8 +1092,8 @@ const S = {
 
   // Menu grid
   menuGrid: {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 160px))',
-    gap: 10, overflow: 'auto', paddingBottom: 80, flex: 1, justifyContent: 'center',
+    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+    gap: 10, overflow: 'auto', paddingBottom: 80, flex: 1,
   },
   menuCard: {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
@@ -1117,7 +1117,7 @@ const S = {
   orderSidebar: {
     width: 340, borderLeft: `1px solid ${C.border}`, background: C.card,
     display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0,
-    boxShadow: '-2px 0 8px rgba(0,0,0,0.04)', marginLeft: 'auto',
+    boxShadow: '-2px 0 8px rgba(0,0,0,0.04)',
   },
 
   // Order panel
