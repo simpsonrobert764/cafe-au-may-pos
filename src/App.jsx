@@ -184,7 +184,7 @@ export default function App() {
   const orderCost = useMemo(() => order.reduce((s, o) => s + o.cost * o.qty, 0), [order])
 
   const completeSale = useCallback(() => {
-    if (order.length === 0 || isDayClosed) return
+    if (order.length === 0 || isDayClosed || !customerName.trim()) return
     const sale = {
       id: uid(),
       items: order.map(o => ({ id: o.id, name: o.name, price: o.price, cost: o.cost, qty: o.qty, emoji: o.emoji })),
@@ -389,6 +389,30 @@ export default function App() {
 
   return (
     <div style={S.root}>
+      <style>{`
+        .menu-card:hover { background: #f9f5ef !important; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important; }
+        .menu-card:active { transform: scale(0.97) !important; }
+        .cat-tab:hover { border-color: #c9a96e !important; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary:hover { background: #f5f0e8 !important; }
+        .settings-btn:hover { background: #faf6f1 !important; }
+        .close-day-btn:hover { background: #f5f0e8 !important; }
+        .qty-btn:hover { background: #e8e2da !important; }
+        .cat-tabs::-webkit-scrollbar, .day-pills::-webkit-scrollbar { display: none; }
+        .sheet-overlay-enter { animation: fadeIn 200ms ease-out; }
+        .sheet-enter { animation: slideUp 250ms ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @media (hover: none) {
+          .menu-card:hover { background: inherit !important; transform: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important; }
+          .cat-tab:hover { border-color: inherit !important; }
+          .btn-primary:hover { opacity: 1; }
+          .btn-secondary:hover { background: inherit !important; }
+          .settings-btn:hover { background: inherit !important; }
+          .close-day-btn:hover { background: inherit !important; }
+          .qty-btn:hover { background: inherit !important; }
+        }
+      `}</style>
       {/* ── Main content ── */}
       <div style={S.main}>
         {tab === 'register' && (
@@ -543,17 +567,18 @@ function RegisterView({
             <p style={S.brandSub}>{today} &middot; {todaySales.length} orders &middot; {fmt(todayRevenue)}</p>
           </div>
           {!isDayClosed ? (
-            <button style={S.closeDayBtn} onClick={() => setModal({ type: 'closeDay' })}>Close Day</button>
+            <button className="close-day-btn" style={S.closeDayBtn} onClick={() => setModal({ type: 'closeDay' })}>Close Day</button>
           ) : (
             <span style={S.dayClosedBadge}>Day Closed</span>
           )}
         </div>
 
         {/* Category tabs */}
-        <div style={S.catTabs}>
+        <div className="cat-tabs" style={S.catTabs}>
           {CATEGORIES.map(c => (
             <button
               key={c}
+              className="cat-tab"
               onClick={() => setCategory(c)}
               style={{ ...S.catTab, ...(category === c ? S.catTabActive : {}) }}
             >{c}</button>
@@ -565,6 +590,7 @@ function RegisterView({
           {filteredMenu.map(item => (
             <button
               key={item.id}
+              className="menu-card"
               style={{
                 ...S.menuCard,
                 ...(flashId === item.id ? S.menuCardFlash : {}),
@@ -575,10 +601,7 @@ function RegisterView({
             >
               <span style={S.menuEmoji}>{item.emoji}</span>
               <span style={S.menuName}>{item.name}</span>
-              <div style={S.menuPriceRow}>
-                <span style={S.menuPrice}>{fmt(item.price)}</span>
-                <span style={{ ...S.marginDot, background: marginColor(item.price, item.cost) }} />
-              </div>
+              <span style={S.menuPrice}>{fmt(item.price)}</span>
             </button>
           ))}
         </div>
@@ -606,8 +629,8 @@ function RegisterView({
           )}
           {/* Slide-up sheet */}
           {orderOpen && (
-            <div style={S.sheetOverlay} onClick={() => setOrderOpen(false)}>
-              <div style={S.sheet} onClick={e => e.stopPropagation()}>
+            <div className="sheet-overlay-enter" style={S.sheetOverlay} onClick={() => setOrderOpen(false)}>
+              <div className="sheet-enter" style={S.sheet} onClick={e => e.stopPropagation()}>
                 <div style={S.sheetHandle} />
                 <OrderPanel
                   order={order} orderTotal={orderTotal} updateQty={updateQty}
@@ -650,9 +673,9 @@ function OrderPanel({
                 <span style={S.orderItemPrice}>{fmt(item.price * item.qty)}</span>
               </div>
               <div style={S.qtyControls}>
-                <button style={S.qtyBtn} onClick={() => updateQty(item.id, -1)}>−</button>
+                <button className="qty-btn" style={S.qtyBtn} onClick={() => updateQty(item.id, -1)}>−</button>
                 <span style={S.qtyNum}>{item.qty}</span>
-                <button style={S.qtyBtn} onClick={() => updateQty(item.id, 1)}>+</button>
+                <button className="qty-btn" style={S.qtyBtn} onClick={() => updateQty(item.id, 1)}>+</button>
               </div>
             </div>
           ))}
@@ -663,10 +686,10 @@ function OrderPanel({
       <div style={S.orderField}>
         <label style={S.fieldLabel}>Customer</label>
         <input
-          style={S.input}
+          style={{ ...S.input, ...(order.length > 0 && !customerName.trim() ? { borderColor: '#e57373' } : {}) }}
           value={customerName}
           onChange={e => setCustomerName(e.target.value)}
-          placeholder="Name (optional)"
+          placeholder="Name (required)"
           list="customer-list"
         />
         <datalist id="customer-list">
@@ -699,9 +722,10 @@ function OrderPanel({
         <div style={S.orderActions}>
           <button style={S.btnSecondary} onClick={clearOrder}>Clear</button>
           <button
-            style={{ ...S.btnPrimary, ...(order.length === 0 || isDayClosed ? { opacity: 0.5 } : {}) }}
+            className="btn-primary"
+            style={{ ...S.btnPrimary, ...(order.length === 0 || isDayClosed || !customerName.trim() ? { opacity: 0.5 } : {}) }}
             onClick={completeSale}
-            disabled={order.length === 0 || isDayClosed}
+            disabled={order.length === 0 || isDayClosed || !customerName.trim()}
           >
             Complete Sale
           </button>
@@ -724,7 +748,7 @@ function PnlView({ availableDays, pnlDay, setPnlDay, pnlStats, daySales, exportC
       </div>
 
       {/* Day pills */}
-      <div style={S.dayPills}>
+      <div className="day-pills" style={S.dayPills}>
         {availableDays.map(d => (
           <button
             key={d}
@@ -952,7 +976,7 @@ function SettingsView({ menu, sales, closedDays, exportData, importFileRef, setM
 
       {/* Actions */}
       <div style={S.settingsActions}>
-        <button style={S.settingsBtn} onClick={exportData}>
+        <button className="settings-btn" style={S.settingsBtn} onClick={exportData}>
           <span style={S.settingsBtnIcon}>📦</span>
           <div>
             <span style={S.settingsBtnLabel}>Export Backup</span>
@@ -960,7 +984,7 @@ function SettingsView({ menu, sales, closedDays, exportData, importFileRef, setM
           </div>
         </button>
 
-        <button style={S.settingsBtn} onClick={() => importFileRef.current?.click()}>
+        <button className="settings-btn" style={S.settingsBtn} onClick={() => importFileRef.current?.click()}>
           <span style={S.settingsBtnIcon}>📥</span>
           <div>
             <span style={S.settingsBtnLabel}>Import Backup</span>
@@ -968,7 +992,7 @@ function SettingsView({ menu, sales, closedDays, exportData, importFileRef, setM
           </div>
         </button>
 
-        <button style={{ ...S.settingsBtn, borderColor: '#e57373' }} onClick={() => setModal({ type: 'clearAll' })}>
+        <button className="settings-btn" style={{ ...S.settingsBtn, borderColor: '#e57373' }} onClick={() => setModal({ type: 'clearAll' })}>
           <span style={S.settingsBtnIcon}>🗑️</span>
           <div>
             <span style={{ ...S.settingsBtnLabel, color: '#e57373' }}>Clear All Data</span>
@@ -1019,18 +1043,19 @@ const S = {
   tabBtn: {
     flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
     padding: '8px 0', border: 'none', background: 'transparent', cursor: 'pointer',
+    fontFamily: 'inherit',
   },
-  tabBtnActive: {},
+  tabBtnActive: { borderTop: '2px solid #c9a96e' },
   tabIcon: { fontSize: 20 },
   tabLabel: { fontSize: 11, color: C.muted, fontWeight: 500 },
   tabLabelActive: { color: C.primary, fontWeight: 700 },
 
   // Register
   registerWrap: {
-    display: 'flex', flex: 1, overflow: 'hidden',
+    display: 'flex', flex: 1, overflow: 'hidden', position: 'relative',
   },
   menuSide: {
-    flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 16px 0',
+    flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: '16px 16px 0', maxWidth: 720,
   },
   registerHeader: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
@@ -1051,6 +1076,7 @@ const S = {
   // Category tabs
   catTabs: {
     display: 'flex', gap: 8, marginBottom: 12, flexShrink: 0,
+    overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none',
   },
   catTab: {
     padding: '8px 16px', borderRadius: 20, border: `1px solid ${C.border}`,
@@ -1063,28 +1089,32 @@ const S = {
 
   // Menu grid
   menuGrid: {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-    gap: 10, overflow: 'auto', paddingBottom: 80, flex: 1,
+    display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 160px))',
+    gap: 10, overflow: 'auto', paddingBottom: 80, flex: 1, justifyContent: 'center',
   },
   menuCard: {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
     padding: 14, borderRadius: 12, border: `1px solid ${C.border}`,
     background: C.card, cursor: 'pointer', transition: 'all 150ms',
-    WebkitTapHighlightColor: 'transparent',
+    WebkitTapHighlightColor: 'transparent', aspectRatio: '1 / 1',
+    fontFamily: 'inherit', color: 'inherit', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   menuCardFlash: {
     transform: 'scale(0.95)', background: '#f5f0e8',
   },
-  menuEmoji: { fontSize: 28 },
-  menuName: { fontSize: 13, fontWeight: 500, textAlign: 'center', lineHeight: 1.2 },
-  menuPriceRow: { display: 'flex', alignItems: 'center', gap: 6 },
+  menuEmoji: { fontSize: 24, lineHeight: 1, overflow: 'hidden' },
+  menuName: {
+    fontSize: 12, fontWeight: 500, textAlign: 'center', lineHeight: 1.2,
+    overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical', wordBreak: 'break-word',
+  },
   menuPrice: { fontSize: 14, fontWeight: 700, color: C.primary },
-  marginDot: { width: 8, height: 8, borderRadius: '50%' },
 
   // Order sidebar (landscape)
   orderSidebar: {
     width: 340, borderLeft: `1px solid ${C.border}`, background: C.card,
     display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0,
+    boxShadow: '-2px 0 8px rgba(0,0,0,0.04)',
   },
 
   // Order panel
@@ -1093,6 +1123,7 @@ const S = {
   },
   orderTitle: {
     fontFamily: "'Instrument Serif', serif", fontSize: 20, marginBottom: 12,
+    paddingBottom: 12, borderBottom: `1px solid ${C.border}`,
   },
   orderEmpty: { color: C.muted, fontSize: 14, textAlign: 'center', padding: '32px 0' },
   orderList: { flex: 1, overflow: 'auto', marginBottom: 12 },
@@ -1108,7 +1139,7 @@ const S = {
   qtyBtn: {
     width: 28, height: 28, borderRadius: '50%', border: `1px solid ${C.border}`,
     background: C.bg, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    cursor: 'pointer', lineHeight: 1,
+    cursor: 'pointer', lineHeight: 1, fontFamily: 'inherit',
   },
   qtyNum: { fontSize: 14, fontWeight: 600, minWidth: 16, textAlign: 'center' },
 
@@ -1138,10 +1169,11 @@ const S = {
 
   // Floating bar (portrait)
   floatingBar: {
-    position: 'absolute', bottom: 60, left: 16, right: 16, padding: '14px 20px',
+    position: 'absolute', bottom: 16, left: 16, right: 16, padding: '14px 20px',
     borderRadius: 16, background: C.primary, color: '#fff', display: 'flex',
     justifyContent: 'space-between', alignItems: 'center', fontSize: 15, fontWeight: 600,
     border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    zIndex: 10, fontFamily: 'inherit',
   },
   floatingTotal: { fontFamily: "'Instrument Serif', serif", fontSize: 20 },
 
@@ -1196,7 +1228,7 @@ const S = {
   // View wrappers
   viewWrap: {
     flex: 1, overflow: 'auto', padding: 16,
-    WebkitOverflowScrolling: 'touch',
+    WebkitOverflowScrolling: 'touch', maxWidth: 960, margin: '0 auto', width: '100%',
   },
   viewHeader: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
@@ -1209,6 +1241,7 @@ const S = {
   // P&L
   dayPills: {
     display: 'flex', gap: 8, overflow: 'auto', marginBottom: 16, paddingBottom: 4,
+    scrollbarWidth: 'none', paddingRight: 20,
   },
   dayPill: {
     padding: '6px 14px', borderRadius: 20, border: `1px solid ${C.border}`,
@@ -1223,7 +1256,7 @@ const S = {
   },
   summaryCard: {
     padding: 16, borderRadius: 12, background: C.card, border: `1px solid ${C.border}`,
-    display: 'flex', flexDirection: 'column', gap: 4,
+    display: 'flex', flexDirection: 'column', gap: 4, boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   summaryLabel: { fontSize: 12, fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: 0.5 },
   summaryValue: { fontSize: 22, fontWeight: 700, fontFamily: "'Instrument Serif', serif" },
@@ -1236,10 +1269,10 @@ const S = {
 
   ordersList: {},
   saleRow: {
-    padding: 12, borderRadius: 10, background: C.card, border: `1px solid ${C.border}`,
-    marginBottom: 8,
+    padding: 14, borderRadius: 10, background: C.card, border: `1px solid ${C.border}`,
+    marginBottom: 10, boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
-  saleTop: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 },
+  saleTop: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 },
   saleTime: { fontSize: 13, fontWeight: 600, color: C.primary },
   customerBadge: {
     fontSize: 12, padding: '2px 8px', borderRadius: 10, background: '#f3e8ff', color: '#7c3aed', fontWeight: 500,
@@ -1262,6 +1295,7 @@ const S = {
   medalCard: {
     padding: 16, borderRadius: 12, background: C.card, border: `1px solid ${C.border}`,
     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, textAlign: 'center',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   medalIcon: { fontSize: 32 },
   medalName: { fontSize: 15, fontWeight: 700 },
@@ -1273,6 +1307,7 @@ const S = {
   leaderRow: {
     display: 'flex', alignItems: 'center', gap: 12, padding: 12,
     borderRadius: 10, background: C.card, border: `1px solid ${C.border}`, marginBottom: 8,
+    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   leaderRank: { fontSize: 14, fontWeight: 700, color: C.muted, width: 30 },
   leaderInfo: { flex: 1 },
@@ -1308,7 +1343,7 @@ const S = {
   settingsBtn: {
     display: 'flex', alignItems: 'center', gap: 14, padding: 16, borderRadius: 12,
     border: `1px solid ${C.border}`, background: C.card, cursor: 'pointer', textAlign: 'left',
-    width: '100%',
+    width: '100%', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   },
   settingsBtnIcon: { fontSize: 24, flexShrink: 0 },
   settingsBtnLabel: { fontSize: 14, fontWeight: 600, display: 'block' },
