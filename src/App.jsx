@@ -1117,7 +1117,7 @@ const S = {
   orderSidebar: {
     width: 340, borderLeft: `1px solid ${C.border}`, background: C.card,
     display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0,
-    boxShadow: '-2px 0 8px rgba(0,0,0,0.04)',
+    boxShadow: '-2px 0 8px rgba(0,0,0,0.04)', marginLeft: 'auto',
   },
 
   // Order panel
