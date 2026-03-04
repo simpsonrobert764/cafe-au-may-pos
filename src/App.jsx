@@ -103,6 +103,7 @@ export default function App() {
   const [customerName, setCustomerName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState(null) // null | 'Cash' | 'Venmo'
   const [flashId, setFlashId] = useState(null)
+  const [lastSale, setLastSale] = useState(null)
   const [orderOpen, setOrderOpen] = useState(false)
   const [modal, setModal] = useState(null)
   const [editItem, setEditItem] = useState(null)
@@ -200,6 +201,7 @@ export default function App() {
     }
     setSales(prev => [sale, ...prev])
     pushSale(sale)
+    setLastSale({ customer: customerName.trim(), total: orderTotal })
     setOrder([])
     setCustomerName('')
     if (!isLandscape) setOrderOpen(false)
@@ -404,6 +406,12 @@ export default function App() {
         .cat-tabs::-webkit-scrollbar, .day-pills::-webkit-scrollbar { display: none; }
         .sheet-overlay-enter { animation: fadeIn 200ms ease-out; }
         .sheet-enter { animation: slideUp 250ms ease-out; }
+        @keyframes toastFade {
+          0% { opacity: 0; transform: translateY(-8px); }
+          10% { opacity: 1; transform: translateY(0); }
+          70% { opacity: 1; }
+          100% { opacity: 0; }
+        }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @media (hover: none) {
@@ -429,7 +437,7 @@ export default function App() {
             setPaymentMethod={setPaymentMethod} clearOrder={clearOrder}
             completeSale={completeSale} isLandscape={isLandscape}
             today={today} setModal={setModal}
-            sales={sales}
+            sales={sales} lastSale={lastSale} setLastSale={setLastSale}
           />
         )}
         {tab === 'pnl' && (
@@ -552,7 +560,7 @@ function RegisterView({
   order, orderTotal, orderOpen, setOrderOpen, updateQty,
   customerName, setCustomerName, allCustomers, paymentMethod,
   setPaymentMethod, clearOrder, completeSale, isLandscape,
-  today, setModal, sales,
+  today, setModal, sales, lastSale, setLastSale,
 }) {
   const todaySales = useMemo(() => sales.filter(s => s.dayId === today), [sales, today])
   const todayRevenue = useMemo(() => todaySales.reduce((s, o) => s + o.total, 0), [todaySales])
@@ -561,6 +569,16 @@ function RegisterView({
 
   return (
     <div style={{ ...S.registerWrap, flexDirection: isLandscape ? 'row' : 'column' }}>
+      {/* ── Sale confirmation toast ── */}
+      {lastSale && (
+        <div
+          key={Date.now()}
+          style={S.toast}
+          onAnimationEnd={() => setLastSale(null)}
+        >
+          ✓ {fmt(lastSale.total)} — {lastSale.customer}
+        </div>
+      )}
       {/* ── Menu grid side ── */}
       <div style={S.menuSide}>
         {/* Header */}
@@ -1052,6 +1070,15 @@ const S = {
   tabIcon: { fontSize: 20 },
   tabLabel: { fontSize: 11, color: C.muted, fontWeight: 500 },
   tabLabelActive: { color: C.primary, fontWeight: 700 },
+
+  // Toast
+  toast: {
+    position: 'absolute', top: 12, left: 16, right: 16, zIndex: 20,
+    padding: '10px 16px', borderRadius: 10,
+    background: '#2e7d32', color: '#fff', fontSize: 14, fontWeight: 600,
+    textAlign: 'center', pointerEvents: 'none',
+    animation: 'toastFade 1.5s ease-out forwards',
+  },
 
   // Register
   registerWrap: {
