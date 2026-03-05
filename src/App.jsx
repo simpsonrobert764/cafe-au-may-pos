@@ -583,7 +583,7 @@ function RegisterView({
       <div style={S.menuSide}>
         {/* Header */}
         <div style={S.registerHeader}>
-          <div>
+          <div style={{ minWidth: 0 }}>
             <h1 style={S.brandTitle}>Cafe Au May</h1>
             <p style={S.brandSub}>{today} &middot; {todaySales.length} orders &middot; {fmt(todayRevenue)}</p>
           </div>
@@ -622,7 +622,7 @@ function RegisterView({
             >
               <span style={S.menuEmoji}>{item.emoji}</span>
               <span style={S.menuName}>{item.name}</span>
-              <span style={S.menuPrice}>{fmt(item.price)}</span>
+              <span style={S.menuPrice}>{item.price === 0 ? 'Free' : fmt(item.price)}</span>
             </button>
           ))}
         </div>
@@ -691,7 +691,7 @@ function OrderPanel({
               <span style={S.orderItemEmoji}>{item.emoji}</span>
               <div style={S.orderItemInfo}>
                 <span style={S.orderItemName}>{item.name}</span>
-                <span style={S.orderItemPrice}>{fmt(item.price * item.qty)}</span>
+                <span style={S.orderItemPrice}>{item.price === 0 ? 'Free' : fmt(item.price * item.qty)}</span>
               </div>
               <div style={S.qtyControls}>
                 <button className="qty-btn" style={S.qtyBtn} onClick={() => updateQty(item.id, -1)}>−</button>
@@ -936,10 +936,10 @@ function MenuView({ menu, editItem, setEditItem, saveMenuItem, newItem, setNewIt
       <div style={S.addItemSection}>
         <h3 style={S.menuSectionTitle}>Add New Item</h3>
         <div style={S.addItemForm}>
-          <input style={S.inputSm} placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem(p => ({ ...p, emoji: e.target.value }))} maxLength={2} />
-          <input style={{ ...S.inputSm, flex: 2 }} placeholder="Name" value={newItem.name} onChange={e => setNewItem(p => ({ ...p, name: e.target.value }))} />
-          <input style={S.inputSm} placeholder="Price" type="number" step="0.25" value={newItem.price} onChange={e => setNewItem(p => ({ ...p, price: e.target.value }))} />
-          <input style={S.inputSm} placeholder="Cost" type="number" step="0.25" value={newItem.cost} onChange={e => setNewItem(p => ({ ...p, cost: e.target.value }))} />
+          <input style={{ ...S.inputSm, flex: 'none', width: 50, minWidth: 50 }} placeholder="Emoji" value={newItem.emoji} onChange={e => setNewItem(p => ({ ...p, emoji: e.target.value }))} maxLength={2} />
+          <input style={{ ...S.inputSm, flex: 2, minWidth: 120 }} placeholder="Name" value={newItem.name} onChange={e => setNewItem(p => ({ ...p, name: e.target.value }))} />
+          <input style={{ ...S.inputSm, minWidth: 70 }} placeholder="Price" type="number" step="0.25" value={newItem.price} onChange={e => setNewItem(p => ({ ...p, price: e.target.value }))} />
+          <input style={{ ...S.inputSm, minWidth: 70 }} placeholder="Cost" type="number" step="0.25" value={newItem.cost} onChange={e => setNewItem(p => ({ ...p, cost: e.target.value }))} />
           <select style={S.inputSm} value={newItem.category} onChange={e => setNewItem(p => ({ ...p, category: e.target.value }))}>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -953,10 +953,10 @@ function MenuView({ menu, editItem, setEditItem, saveMenuItem, newItem, setNewIt
 function MenuItemForm({ item, onChange, onSave, onCancel }) {
   return (
     <div style={S.editFormRow}>
-      <input style={S.inputSm} value={item.emoji} onChange={e => onChange({ ...item, emoji: e.target.value })} maxLength={2} />
-      <input style={{ ...S.inputSm, flex: 2 }} value={item.name} onChange={e => onChange({ ...item, name: e.target.value })} />
-      <input style={S.inputSm} type="number" step="0.25" value={item.price} onChange={e => onChange({ ...item, price: parseFloat(e.target.value) || 0 })} />
-      <input style={S.inputSm} type="number" step="0.25" value={item.cost} onChange={e => onChange({ ...item, cost: parseFloat(e.target.value) || 0 })} />
+      <input style={{ ...S.inputSm, flex: 'none', width: 50, minWidth: 50 }} value={item.emoji} onChange={e => onChange({ ...item, emoji: e.target.value })} maxLength={2} />
+      <input style={{ ...S.inputSm, flex: 2, minWidth: 120 }} value={item.name} onChange={e => onChange({ ...item, name: e.target.value })} />
+      <input style={{ ...S.inputSm, minWidth: 70 }} type="number" step="0.25" value={item.price} onChange={e => onChange({ ...item, price: parseFloat(e.target.value) || 0 })} />
+      <input style={{ ...S.inputSm, minWidth: 70 }} type="number" step="0.25" value={item.cost} onChange={e => onChange({ ...item, cost: parseFloat(e.target.value) || 0 })} />
       <select style={S.inputSm} value={item.category} onChange={e => onChange({ ...item, category: e.target.value })}>
         {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
       </select>
@@ -1093,10 +1093,14 @@ const S = {
   brandTitle: {
     fontFamily: "'Instrument Serif', serif", fontSize: 24, fontWeight: 400, color: C.primary,
   },
-  brandSub: { fontSize: 13, color: C.muted, marginTop: 2 },
+  brandSub: {
+    fontSize: 13, color: C.muted, marginTop: 2,
+    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+  },
   closeDayBtn: {
     padding: '8px 16px', borderRadius: 8, border: `1px solid ${C.border}`,
     background: C.card, fontSize: 13, fontWeight: 600, color: C.primary, cursor: 'pointer',
+    flexShrink: 0, fontFamily: 'inherit',
   },
   dayClosedBadge: {
     padding: '8px 16px', borderRadius: 8, background: '#e8f5e9', color: '#2e7d32',
@@ -1111,7 +1115,7 @@ const S = {
   catTab: {
     padding: '8px 16px', borderRadius: 20, border: `1px solid ${C.border}`,
     background: C.card, fontSize: 13, fontWeight: 500, color: C.muted, cursor: 'pointer',
-    transition: 'all 150ms',
+    transition: 'all 150ms', flexShrink: 0, fontFamily: 'inherit',
   },
   catTabActive: {
     background: C.primary, color: '#fff', borderColor: C.primary,
@@ -1120,7 +1124,7 @@ const S = {
   // Menu grid
   menuGrid: {
     display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-    gap: 10, overflow: 'auto', paddingBottom: 80, flex: 1,
+    gap: 10, overflow: 'auto', paddingBottom: 60, flex: 1,
   },
   menuCard: {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
@@ -1137,6 +1141,7 @@ const S = {
     fontSize: 12, fontWeight: 500, textAlign: 'center', lineHeight: 1.2,
     overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical', wordBreak: 'break-word',
+    minHeight: '2.4em',
   },
   menuPrice: { fontSize: 14, fontWeight: 700, color: C.primary },
 
@@ -1167,7 +1172,7 @@ const S = {
   orderItemPrice: { fontSize: 13, color: C.muted, display: 'block' },
   qtyControls: { display: 'flex', alignItems: 'center', gap: 8 },
   qtyBtn: {
-    width: 28, height: 28, borderRadius: '50%', border: `1px solid ${C.border}`,
+    width: 32, height: 32, minWidth: 32, borderRadius: '50%', border: `1px solid ${C.border}`,
     background: C.bg, fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer', lineHeight: 1, fontFamily: 'inherit',
   },
@@ -1178,13 +1183,13 @@ const S = {
   fieldLabel: { fontSize: 12, fontWeight: 600, color: C.muted, marginBottom: 4, display: 'block', textTransform: 'uppercase', letterSpacing: 0.5 },
   input: {
     width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`,
-    fontSize: 14, background: C.bg, outline: 'none',
+    fontSize: 14, background: C.bg, outline: 'none', boxSizing: 'border-box',
   },
   paymentRow: { display: 'flex', gap: 8 },
   paymentBtn: {
     flex: 1, padding: '8px 0', borderRadius: 8, border: `1px solid ${C.border}`,
     background: C.bg, fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center',
-    transition: 'all 150ms',
+    transition: 'all 150ms', fontFamily: 'inherit',
   },
   paymentBtnActive: {
     background: C.primary, color: '#fff', borderColor: C.primary,
@@ -1213,7 +1218,7 @@ const S = {
     display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
   },
   sheet: {
-    background: C.card, borderRadius: '20px 20px 0 0', maxHeight: '70vh',
+    background: C.card, borderRadius: '20px 20px 0 0', maxHeight: '80vh',
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
   },
   sheetHandle: {
@@ -1229,15 +1234,15 @@ const S = {
   },
   btnSecondary: {
     padding: '12px 20px', borderRadius: 10, border: `1px solid ${C.border}`,
-    background: C.card, fontSize: 14, fontWeight: 500, cursor: 'pointer',
+    background: C.card, fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit',
   },
   btnDanger: {
     padding: '12px 20px', borderRadius: 10, border: 'none',
-    background: C.danger, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+    background: C.danger, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
   },
   btnSmall: {
     padding: '6px 14px', borderRadius: 8, border: `1px solid ${C.border}`,
-    background: C.card, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+    background: C.card, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
   },
   btnIcon: {
     border: 'none', background: 'transparent', fontSize: 16, cursor: 'pointer', padding: 4,
@@ -1276,7 +1281,7 @@ const S = {
   dayPill: {
     padding: '6px 14px', borderRadius: 20, border: `1px solid ${C.border}`,
     background: C.card, fontSize: 12, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
-    flexShrink: 0,
+    flexShrink: 0, fontFamily: 'inherit',
   },
   dayPillActive: { background: C.primary, color: '#fff', borderColor: C.primary },
 
@@ -1363,10 +1368,11 @@ const S = {
   inputSm: {
     padding: '8px 10px', borderRadius: 8, border: `1px solid ${C.border}`,
     fontSize: 13, background: C.bg, outline: 'none', flex: 1, minWidth: 60,
+    boxSizing: 'border-box',
   },
 
   addItemSection: { marginTop: 24, padding: 16, borderRadius: 12, background: C.card, border: `1px solid ${C.border}` },
-  addItemForm: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
+  addItemForm: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', width: '100%' },
 
   // Settings
   settingsActions: { display: 'flex', flexDirection: 'column', gap: 10 },
