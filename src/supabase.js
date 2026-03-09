@@ -19,6 +19,8 @@ export async function pushSale(sale) {
       customer: sale.customer || null,
       day_id: sale.dayId,
       payment_method: sale.paymentMethod || null,
+      source: sale.source || 'pos',
+      status: sale.status || 'fulfilled',
     })
   } catch (e) { console.warn('pushSale error', e) }
 }
@@ -89,6 +91,8 @@ export async function pullAll() {
       id: r.id, items: r.items, total: Number(r.total), cost: Number(r.cost),
       time: r.time, customer: r.customer || '', dayId: r.day_id,
       paymentMethod: r.payment_method || null,
+      source: r.source || 'pos',
+      status: r.status || 'fulfilled',
     }))
 
     const closedDays = (daysRes.data || []).map(r => r.day_id)
@@ -125,6 +129,8 @@ export async function pushAllSales(sales) {
         id: s.id, items: s.items, total: s.total, cost: s.cost,
         time: s.time, customer: s.customer || null, day_id: s.dayId,
         payment_method: s.paymentMethod || null,
+        source: s.source || 'pos',
+        status: s.status || 'fulfilled',
       }))
       // Supabase has a row limit per upsert, batch in 500s
       for (let i = 0; i < rows.length; i += 500) {

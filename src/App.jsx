@@ -198,6 +198,8 @@ export default function App() {
       customer: customerName.trim(),
       dayId: today,
       paymentMethod,
+      source: 'pos',
+      status: 'fulfilled',
     }
     setSales(prev => [sale, ...prev])
     pushSale(sale)
